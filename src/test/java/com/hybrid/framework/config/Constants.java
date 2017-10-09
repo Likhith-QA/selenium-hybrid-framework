@@ -33,7 +33,6 @@ public class Constants {
     // Screenshot path
     public static final String SCREENSHOT_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\reports\\screenshots\\";
 
-
     //Data Sheet Column Numbers
     public static final int COL_TESTCASEID = 0;
     public static final int COL_PAGEOBJECT = 4;
@@ -54,7 +53,6 @@ public class Constants {
     public static final String CHROMEDRIVER = System.getProperty("user.dir") + "\\src\\test\\resources\\browser_binaries\\chromedriver.exe";
     public static final String FIREFOXDRIVER = System.getProperty("user.dir") + "\\src\\test\\resources\\browser_binaries\\geckodriver.exe";
 
-
     // Error Message
-    public static final String ERR_MSG = "Also check the 'Test Steps' sheet in Excel and 'extent-reporting.html'";
+    public static final String ERR_MSG = "Check the 'Test Steps' sheet in Excel and/or 'extent-reporter.html'";
 }

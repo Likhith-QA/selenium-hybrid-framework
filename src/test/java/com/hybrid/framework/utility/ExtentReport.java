@@ -18,7 +18,7 @@ public class ExtentReport {
 
     public ExtentReport(boolean replaceExisting) {
         extent = new ExtentReports(System.getProperty("user.dir") +
-                "\\src\\test\\java\\com\\b2b\\automation\\reports\\extent-reporting.html", replaceExisting);
+                "\\src\\test\\java\\com\\b2b\\automation\\reports\\extent-reporter.html", replaceExisting);
         extent  // Parameter set for more details
                 .addSystemInfo("Host Name", "B2B Web Sanity")
                 .addSystemInfo("Environment", "UI Automation Testing")
@@ -47,6 +47,7 @@ public class ExtentReport {
     }
 
     public void logFailed(String message) throws IOException {
+
         logger.log(LogStatus.FAIL, message);
 
         // Add screenshot to the 'reports' directory.
@@ -60,3 +61,5 @@ public class ExtentReport {
         System.out.println(errorLogMsg);
     }
 }
+
+

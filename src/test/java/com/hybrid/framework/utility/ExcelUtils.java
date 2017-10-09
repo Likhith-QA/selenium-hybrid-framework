@@ -2,6 +2,7 @@ package com.hybrid.framework.utility;
 
 import com.hybrid.framework.config.Constants;
 import com.hybrid.framework.executionEngine.Executor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.FileInputStream;
@@ -27,11 +28,36 @@ public class ExcelUtils {
         try {
             excelWSheet = excelWBook.getSheet(sheetName);
             cell = excelWSheet.getRow(rowNum).getCell(colNum);
-            return cell.getStringCellValue();
+
+            if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+                return null;
+            }
+            else {
+                return cell.getStringCellValue();
+            }
         }
         catch (Exception e) {
             Executor.boolResult = false;
             return "";
+        }
+    }
+
+    public static void deleteColumnContents(int rowNum, int lastRowNUm, int colNum, String sheetName) {
+        try {
+            excelWSheet = excelWBook.getSheet(sheetName);
+            cell = excelWSheet.getRow(rowNum).getCell(colNum);
+
+            if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+                return;
+            }
+            else {
+                for (int startingRow = rowNum; startingRow <= lastRowNUm; startingRow++) {
+                    cell.setCellValue(Cell.CELL_TYPE_BLANK);
+                }
+            }
+        }
+        catch(Exception e) {
+            Executor.boolResult = false;
         }
     }
 
@@ -45,22 +71,6 @@ public class ExcelUtils {
             Executor.boolResult = false;
         }
         return iNumber;
-    }
-
-    public static void deleteColumnContents(int colNum, String sheetName) {
-        int iNumber = 0;
-        try {
-            excelWSheet = excelWBook.getSheet(sheetName);
-            iNumber = excelWSheet.getLastRowNum() + 1;
-
-            for (int i = 1; i < iNumber; i++) {
-                cell = excelWSheet.getRow(i).getCell(colNum);
-                cell.setCellValue("");
-            }
-        }
-        catch (Exception e) {
-            Executor.boolResult = false;
-        }
     }
 
     public static int getRowContains(String sTestCaseName, int colNum,String sheetName) {

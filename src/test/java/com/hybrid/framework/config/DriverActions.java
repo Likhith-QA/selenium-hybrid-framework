@@ -1,14 +1,13 @@
 package com.hybrid.framework.config;
 
 import com.hybrid.framework.executionEngine.Executor;
+import com.b2b.automation.helpers.*;
 import com.hybrid.framework.helpers.*;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
 import java.io.IOException;
-import java.util.Objects;
-
-import static com.hybrid.framework.executionEngine.Executor.OR;
 
 /**
  * Class containing all the keywords that can be
@@ -22,9 +21,18 @@ public class DriverActions {
     public static ElementActions elementActions;
     public static GlobalWebDriver globalWebDriver;
 
+    /**
+     * Browser actions.
+     */
+
     public static void openBrowser(String object, String locator, String data) throws IOException {
         try {
             Executor.extentReport.logInfo("Opening Browser");
+
+            if (data == null) {
+                Executor.extentReport.logFailed("Cannot open a browser without defined one");
+                return;
+            }
 
             if (data.equalsIgnoreCase("firefox")) {
                 driver = BrowserFactory.startBrowser(data);
@@ -59,25 +67,9 @@ public class DriverActions {
         }
     }
 
-    public static void click(String object, String locator, String data) throws IOException {
-        try {
-            Executor.extentReport.logInfo("Clicking on WebElement : "+ object);
-            Elements.getElement(locator, OR.getString(object)).click();
-            Executor.extentReport.logPass("Click to "  + object + " was successful");
-            if (data != null) {
-                wait.impWait(Integer.parseInt(data));
-                Executor.extentReport.logInfo("Click was explicitly waited for " + data + " seconds");
-            }
-            else {
-                wait.impWait(10);
-                Executor.extentReport.logInfo("Click was implicitly waited for " + data + " seconds");
-            }
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to click the object name : " + object + " | " + e.getMessage());
-            Executor.boolResult = false;
-        }
-    }
+    /**
+     * Browser redirection actions.
+     */
 
     public static void goBack(String object, String locator, String data) throws IOException {
         try {
@@ -101,31 +93,6 @@ public class DriverActions {
         }
         catch (Exception e) {
             Executor.extentReport.logFailed("Not able to go to target page");
-            Executor.boolResult = false;
-        }
-    }
-
-    public static void input(String object, String locator, String data) throws IOException {
-        try {
-            Executor.extentReport.logInfo("Entering the text in : " + object);
-            Elements.getElement(locator, OR.getString(object)).sendKeys(data);
-            wait.impWait(10);
-            Executor.extentReport.logPass("Input " + data + " to " + object);
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to enter " + data + " : "+ e.getMessage());
-            Executor.boolResult = false;
-        }
-    }
-
-    public static void moveToElement(String object, String locator, String data) throws IOException {
-        try {
-            Executor.extentReport.logInfo("Moving to the element : " + object);
-            elementActions.moveToElement(Elements.getElement(locator, OR.getString(object)));
-            Executor.extentReport.logPass("Moved the mouse to " + object);
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to move to element : " + e.getMessage());
             Executor.boolResult = false;
         }
     }
@@ -156,59 +123,126 @@ public class DriverActions {
         }
     }
 
-    public static void waitFor(String object, String locator, String data) throws IOException {
+    /**
+     * Element actions.
+     */
+
+    public static void click(String object, String locator, String data) throws IOException {
         try {
-            if (!Objects.equals(object, "")) {
-                Executor.extentReport.logInfo("Waiting for " + object + " explicitly in " + data + " seconds");
-                wait.untilElementVisible(Elements.getElement(locator, OR.getString(object)));
+            Executor.extentReport.logInfo("Waiting until "+ object + " is clickable");
+            wait.untilElementIsClickable(Elements.getElement(locator, Executor.OR.getString(object)));
+            Executor.extentReport.logInfo("Wait succeeded and will click "+ object);
+            Elements.getElement(locator, Executor.OR.getString(object)).click();
+            Executor.extentReport.logPass("Click for "+ object + " was successfully performed");
+        }
+        catch(Exception e) {
+            Executor.extentReport.logFailed("Not able to click the object name : " + object + " | " + e.getMessage());
+            Executor.boolResult = false;
+        }
+    }
+
+    public static void input(String object, String locator, String data) throws IOException {
+        try {
+            Executor.extentReport.logInfo("Entering the text in : " + object);
+            Elements.getElement(locator, Executor.OR.getString(object)).sendKeys(data);
+            wait.impWait(10);
+            Executor.extentReport.logPass("Input " + data + " to " + object);
+        }
+        catch(Exception e) {
+            Executor.extentReport.logFailed("Not able to enter " + data + " : "+ e.getMessage());
+            Executor.boolResult = false;
+        }
+    }
+
+    public static void selectByVisibleText(String object, String locator, String data) {
+        Select select = new Select(Elements.getElement(locator, Executor.OR.getString(object)));
+        select.selectByVisibleText(data);
+        wait.impWait(10);
+    }
+
+    /**
+     * Mouse hover actions.
+     */
+
+    public static void moveToElement(String object, String locator, String data) throws IOException {
+        try {
+            Executor.extentReport.logInfo("Moving to the element : " + object);
+            elementActions.moveToElement(Elements.getElement(locator, Executor.OR.getString(object)));
+            Executor.extentReport.logPass("Moved the mouse to " + object);
+        }
+        catch(Exception e) {
+            Executor.extentReport.logFailed("Not able to move to element : " + e.getMessage());
+            Executor.boolResult = false;
+        }
+    }
+
+    /**
+     * Wait actions.
+     */
+
+    public static void waitFor(String object, String locator, String data) throws IOException {
+        // Force the machine to pause for given time (data param) seconds, otherwise will pause for 5 seconds.
+        try {
+            Executor.extentReport.logInfo("Waiting for " + data + " seconds delay");
+
+            if (!data.isEmpty()) {
+                Thread.sleep(Integer.parseInt(data) * 1000);
             }
             else {
-                Executor.extentReport.logInfo("Wait for " + data);
-                Thread.sleep(Integer.parseInt(data));
+                Thread.sleep(5000);
             }
+
             Executor.extentReport.logPass("Waited successfully");
         }
         catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to Wait : " + e.getMessage());
+            Executor.extentReport.logFailed("Not able to wait : " + e.getMessage());
             Executor.boolResult = false;
         }
     }
 
     public static void waitExplicitly(String object, String locator, String data) throws IOException {
         try {
+            if (object == null && locator == null && data == null) {
+                Executor.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
+                return;
+            }
+
             Executor.extentReport.logInfo("Waiting for " + object + " explicitly in " + data + " seconds");
-            wait.untilElementVisible(Elements.getElement(locator, OR.getString(object)));
+            wait.untilElementVisible(Elements.getElement(locator, Executor.OR.getString(object)));
             wait.impWait(Integer.parseInt(data));
-            Executor.extentReport.logPass("Waited successfully for " + data + " seconds");
+            Executor.extentReport.logPass("Waited successfully within " + data + " seconds");
         }
         catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to Wait explicitly : " + e.getMessage());
+            Executor.extentReport.logFailed("Not able to wait explicitly : " + e.getMessage());
             Executor.boolResult = false;
         }
     }
 
     public static void waitForElementInvisibility(String object, String locator, String data) throws IOException {
         try {
-            if (object != null && !object.equalsIgnoreCase("NULL")) {
-                Executor.extentReport.logInfo("Waiting for " + object + " to be invisible implicitly in " + data + " seconds");
-                wait.untilElementNotVisible(Elements.getBy(locator, OR.getString(object)));
-                Executor.extentReport.logPass("Object "+ object +" has been invisible");
+            if (object == null && locator == null && data == null) {
+                Executor.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
+                return;
             }
-            else {
-                Executor.extentReport.logInfo("Wait for " + data);
-                wait.impWait(Integer.parseInt(data));
-            }
+
+            Executor.extentReport.logInfo("Waiting for " + object + " to be invisible within " + data + " seconds");
+            wait.untilElementNotVisible(Elements.getBy(locator, Executor.OR.getString(object)));
+            Executor.extentReport.logPass("Object "+ object +" has been invisible");
         }
         catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to Wait : " + e.getMessage());
+            Executor.extentReport.logFailed("Not able to wait : " + e.getMessage());
             Executor.boolResult = false;
         }
     }
 
+    /**
+     * Assertion actions.
+     */
+
     public static void assertElementVisible(String object, String locator, String data) throws IOException {
         try {
             Executor.extentReport.logInfo("Asserting if element is visible.");
-            Assert.assertTrue(Elements.getElement(locator, OR.getString(object)).isDisplayed());
+            Assert.assertTrue(Elements.getElement(locator, Executor.OR.getString(object)).isDisplayed());
             Executor.extentReport.logPass("Assertion : Object " + object + " was visible");
         }
         catch (Exception e) {

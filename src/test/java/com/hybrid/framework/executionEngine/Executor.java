@@ -1,17 +1,15 @@
 package com.hybrid.framework.executionEngine;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 import com.hybrid.framework.helpers.Time;
 import com.hybrid.framework.utility.ExtentReport;
-import com.hybrid.framework.config.Constants;
-import com.hybrid.framework.config.DriverActions;
-import com.hybrid.framework.utility.ExcelUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import com.hybrid.framework.config.DriverActions;
+import com.hybrid.framework.config.Constants;
+import com.hybrid.framework.utility.ExcelUtils;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -77,7 +75,7 @@ public class Executor {
      * @throws Exception
      */
 
-    private void executeTestCase() throws InvocationTargetException, IllegalAccessException, IOException {
+    private void executeTestCase() throws Exception {
         // Counts the test case(s) in the 'Test Cases' sheet in 'DataEngine.xlsm'
         int intTotalTestCases = ExcelUtils.getRowCount(Constants.SHEET_TESTCASES);
         int i = 1;
@@ -105,6 +103,10 @@ public class Executor {
                 intTestStep = ExcelUtils.getRowContains(strTestCaseID, Constants.COL_TESTCASEID, Constants.SHEET_TESTSTEPS);
                 intTestLastStep = ExcelUtils.getTestStepsCount(Constants.SHEET_TESTSTEPS, strTestCaseID, intTestStep);
 
+                // Delete all the past results.
+                ExcelUtils.deleteColumnContents(intTestStep, intTestLastStep, 8, Constants.SHEET_TESTSTEPS);
+                ExcelUtils.deleteColumnContents(intTestStep, intTestLastStep, 9, Constants.SHEET_TESTSTEPS);
+
                 // Step invocation is initiated as 'true'; will change to 'false' once error was found at runtime.
                 boolResult = true;
 
@@ -113,6 +115,7 @@ public class Executor {
 
                 // Execute each step.
                 for (; intTestStep < intTestLastStep; intTestStep++) {
+
                     // Extract the action keyword from the sheet 'Test Steps' column 'Action Keyword'
                     strDriverAction = ExcelUtils.getCellData(intTestStep, Constants.COL_DRIVERACTIONS,Constants.SHEET_TESTSTEPS);
 
@@ -150,9 +153,9 @@ public class Executor {
      *  in-charge of enumerating all the test steps
      *  indicated from the DataEngine.xlsm data source
      *
-     * @throws InvocationTargetException, IllegalAccessException, IOException
+     * @throws Exception
      */
-    private static void executeTestStepActions() throws InvocationTargetException, IllegalAccessException, IOException {
+    private static void executeTestStepActions() throws Exception {
         for (Method method : methods) {
 
             if(method.getName().equals(strDriverAction)) {

@@ -13,7 +13,7 @@ public class Time {
 
     public static String getTimeStampAndDate() {
         Date dNow = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat ("yy-MM-dd kk.mm.ss");
+        SimpleDateFormat ft = new SimpleDateFormat ("yy-MM-dd_kk.mm.ss");
         return ft.format(dNow);
     }
 }

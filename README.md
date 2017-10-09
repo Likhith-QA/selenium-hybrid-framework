@@ -1,4 +1,4 @@
-# The B2B Web Sanity Automation Framework
+# The selenium-hybrid Automation Framework
 
 A Java for Selenium API powered Framework that uses Hybrid Framework
 
