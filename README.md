@@ -13,7 +13,7 @@ Since this is a `Hybrid Framework` it means all raw data and driver actions to b
 
 The files' path is :
 ```
-b2b-QAAutomation/src/test/java/com/b2b/automation/dataEngine/DataEngine.xlsx
+selenium-hybrid-framework/src/test/java/com/b2b/automation/dataEngine/DataEngine.xlsx
 ```
 
 ## System Requirements
