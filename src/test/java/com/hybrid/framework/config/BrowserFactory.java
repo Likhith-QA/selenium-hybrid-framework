@@ -1,16 +1,16 @@
 package com.hybrid.framework.config;
 
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +19,11 @@ public class BrowserFactory {
     public static WebDriver driver = null;
 
     public static WebDriver startBrowser(String browser) throws MalformedURLException {
-        File file;
         switch (browser) {
             case Constants.CHROME:
-                file = new File(Constants.CHROMEDRIVER);
-                System.setProperty("webdriver.chrome.driver", file.getAbsolutePath());
+                ChromeDriverManager.getInstance().setup();
                 ChromeOptions options = new ChromeOptions();
-                Map<String, Object> prefs = new HashMap<String, Object>();
+                Map<String, Object> prefs = new HashMap<>();
                 prefs.put("profile.default_content_settings.popups", 0);
                 prefs.put("credentials_enable_service", false);
                 prefs.put("password_manager_enabled", false);
@@ -40,15 +38,12 @@ public class BrowserFactory {
                 cap.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.ACCEPT);
                 return driver = new ChromeDriver(cap);
             case Constants.FIREFOX:
-                file = new File(Constants.FIREFOXDRIVER);
-                System.setProperty("webdriver.gecko.driver", file.getAbsolutePath());
+                FirefoxDriverManager.getInstance().setup();
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 FirefoxProfile profile = new FirefoxProfile();
                 profile.setPreference("browser.startup.homepage","about:blank");
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
                 return driver = new FirefoxDriver(capabilities);
-            case Constants.HTMLUNIT:
-                return driver = new HtmlUnitDriver(true);
             default:
                 throw new IllegalArgumentException("Invalid browser name : " + browser);
         }

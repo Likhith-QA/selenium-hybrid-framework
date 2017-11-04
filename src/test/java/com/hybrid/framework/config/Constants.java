@@ -4,6 +4,12 @@ package com.hybrid.framework.config;
  * Contains all callable constant values.
  */
 public class Constants {
+    // Runmode
+    public static final String YES = "yes";
+
+    // Method name
+    public static final String NAVIGATE = "navigate";
+
     // Browsers
     public static final String FIREFOX = "firefox";
     public static final String CHROME = "chrome";
@@ -27,23 +33,54 @@ public class Constants {
     public static final String TEST_CASES_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\Test Cases.csv";
     public static final String TEST_STEPS_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\Test Steps.csv";
 
+    // URLs
+    public static final String BASE_URL = "http://10.40.11.210:8080/login";
+
+    // Excel file FILE_FORMAT
+    private static final String FILE_FORMAT = ".xlsx";
+
+    // QA user names
+    public static final String JAMES = "james.marturillas";
+    public static final String CAR = "maricar.marzan";
+    public static final String GERARD = "gerard.deguito";
+    public static final String RON = "ron.delmoro";
+
+    public static final String EXCEL_NAME_MASTER = "DataEngine";
+    public static final String EXCEL_NAME_CAR = "DataEngine_Car";
+    public static final String EXCEL_NAME_GERARD = "DataEngine_Gerard";
+    public static final String EXCEL_NAME_RON = "DataEngine_Ron";
+
     // Excel path
-    public static final String EXCEL_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\DataEngine.xlsx";
+    public static final String EXCEL_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_MASTER + FILE_FORMAT;
+    public static final String EXCEL_CAR = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_CAR + FILE_FORMAT;
+    public static final String EXCEL_GERARD = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_GERARD + FILE_FORMAT;
+    public static final String EXCEL_RON = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_RON + FILE_FORMAT;
 
     // Screenshot path
     public static final String SCREENSHOT_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\reports\\screenshots\\";
 
     //Data Sheet Column Numbers
+
+    // Test Case sheet
     public static final int COL_TESTCASEID = 0;
+
+    public static final int COL_CHROME_RUNMODE = 2;
+    public static final int COL_RESULT_CHROME = 3;
+    public static final int COL_TIMEANDDATE_CHROME = 4;
+
+    public static final int COL_FIREFOX_RUNMODE = 5;
+    public static final int COL_RESULT_FIREFOX = 6;
+    public static final int COL_TIMEANDDATE_FIREFOX = 7;
+
+    // Test Step sheet
     public static final int COL_PAGEOBJECT = 4;
     public static final int COL_LOCATOR = 5;
     public static final int COL_DRIVERACTIONS = 6;
-    public static final int COL_RUNMODE = 2;
-    public static final int COL_RESULT = 3;
     public static final int COL_DATASET = 7;
-    public static final int COL_TESTSTEP_RESULT = 8;
-    public static final int COL_TESTSTEP_TIMEANDDATE = 9;
-    public static final int COL_TESTCASE_TIMEANDDATE = 4;
+    public static final int COL_TESTSTEP_CHROME_RESULT = 8;
+    public static final int COL_TESTSTEP_CHROME_TIMEANDDATE = 9;
+    public static final int COL_TESTSTEP_FIREFOX_RESULT = 10;
+    public static final int COL_TESTSTEP_FIREFOX_TIMEANDDATE = 11;
 
     // Data Engine Excel sheets
     public static final String SHEET_TESTSTEPS = "Test Steps";

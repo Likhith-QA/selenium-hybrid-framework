@@ -1,12 +1,12 @@
-package com.b2b.automation.execution;
+package com.hybrid.framework.execution;
 
-import com.b2b.automation.config.Constants;
-import com.b2b.automation.config.DriverActions;
-import com.b2b.automation.helpers.Time;
-import com.b2b.automation.utility.BrowserSelector;
-import com.b2b.automation.utility.ExcelUtils;
-import com.b2b.automation.utility.ExtentReport;
-import com.b2b.automation.utility.StringBuilderUtils;
+import com.hybrid.framework.config.Constants;
+import com.hybrid.framework.config.DriverActions;
+import com.hybrid.framework.helpers.Time;
+import com.hybrid.framework.utility.BrowserSelector;
+import com.hybrid.framework.utility.ExcelUtils;
+import com.hybrid.framework.utility.ExtentReport;
+import com.hybrid.framework.utility.StringBuilderUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.testng.annotations.Test;
 

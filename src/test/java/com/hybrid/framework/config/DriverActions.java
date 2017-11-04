@@ -1,8 +1,10 @@
 package com.hybrid.framework.config;
 
-import com.hybrid.framework.executionEngine.Executor;
+import com.hybrid.framework.execution.TestRunner;
 import com.b2b.automation.helpers.*;
 import com.hybrid.framework.helpers.*;
+import com.hybrid.framework.utility.Log;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
@@ -19,7 +21,7 @@ public class DriverActions {
     public static Wait wait;
     public static JSExecutor js;
     public static ElementActions elementActions;
-    public static GlobalWebDriver globalWebDriver;
+    public static GlobalWebDriver globalDriver;
 
     /**
      * Browser actions.
@@ -27,10 +29,10 @@ public class DriverActions {
 
     public static void openBrowser(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Opening Browser");
+            TestRunner.extentReport.logInfo("Opening Browser");
 
             if (data == null) {
-                Executor.extentReport.logFailed("Cannot open a browser without defined one");
+                TestRunner.extentReport.logFailed("Cannot open a browser without defined one");
                 return;
             }
 
@@ -40,30 +42,30 @@ public class DriverActions {
             else if (data.equalsIgnoreCase("chrome")) {
                 driver = BrowserFactory.startBrowser(data);
             }
+
             driver.manage().window().maximize();
-            globalWebDriver = new GlobalWebDriver(driver);
+            globalDriver = new GlobalWebDriver(driver);
             wait = new Wait(driver);
-            js  = new JSExecutor(driver);
+            js = new JSExecutor(driver);
             elementActions = new ElementActions(driver);
-            Executor.extentReport.logPass("Browser was opened");
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to open the browser : " + data + " | " + e.getMessage());
+            TestRunner.extentReport.logInfo("Browser was opened");
+
+        } catch (Exception e) {
+            Log.error("Not able to open the browser : " + data + " | " + e.getMessage());
         }
     }
 
     public static void closeBrowser(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Closing the browser");
-            if (driver == null) {
+            if (globalDriver.getDriver() == null) {
                 return;
             }
-            driver.quit();
-            driver = null;
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to Close the Browser : " + e.getMessage());
-            Executor.boolResult = false;
+            globalDriver.getDriver().quit();
+            globalDriver = null;
+            TestRunner.extentReport.logInfo("Closed the browser");
+        } catch (Exception e) {
+            Log.error("Not able to Close the Browser : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
@@ -73,53 +75,49 @@ public class DriverActions {
 
     public static void goBack(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Going back to the previous page");
-            driver.navigate().back();
+            TestRunner.extentReport.logInfo("Going back to the previous page");
+            globalDriver.getDriver().navigate().back();
             wait.impWait(10);
-            Executor.extentReport.logPass("Back to the previous page was successfully performed");
-        }
-        catch (Exception e) {
-            Executor.extentReport.logFailed("Not able to go back to the previous page");
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Back to the previous page was successfully performed");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to go back to the previous page");
+            TestRunner.boolResult = false;
         }
     }
 
     public static void goForward(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Going forward from this page : " + driver.getCurrentUrl());
-            driver.navigate().forward();
+            TestRunner.extentReport.logInfo("Going forward from this page : " + driver.getCurrentUrl());
+            globalDriver.getDriver().navigate().forward();
             wait.impWait(10);
-            Executor.extentReport.logPass("Browse forward was successfully performed");
-        }
-        catch (Exception e) {
-            Executor.extentReport.logFailed("Not able to go to target page");
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Browse forward was successfully performed");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to go to target page");
+            TestRunner.boolResult = false;
         }
     }
 
     public static void navigate(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Navigating to URL");
+            TestRunner.extentReport.logInfo("Navigating to URL");
             wait.impWait(10);
-            driver.get(data);
-            Executor.extentReport.logPass("Navigated to " + data);
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to navigate the url : " + data + " | " + e.getMessage());
-            Executor.boolResult = false;
+            globalDriver.getDriver().get(data);
+            TestRunner.extentReport.logPass("Navigated to " + data);
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to navigate the url : " + data + " | " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
     public static void refresh(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Refreshing this page : " + driver.getCurrentUrl());
-            driver.navigate().refresh();
+            TestRunner.extentReport.logInfo("Refreshing this page : " + globalDriver.getDriver().getCurrentUrl());
+            globalDriver.getDriver().navigate().refresh();
             wait.impWait(10);
-            Executor.extentReport.logPass("Refreshed");
-        }
-        catch (Exception e) {
-            Executor.extentReport.logFailed("Not able to go to refresh the page : " + driver.getCurrentUrl());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Refreshed");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to go to refresh the page : " + globalDriver.getDriver().getCurrentUrl());
+            TestRunner.boolResult = false;
         }
     }
 
@@ -129,35 +127,52 @@ public class DriverActions {
 
     public static void click(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Waiting until "+ object + " is clickable");
-            wait.untilElementIsClickable(Elements.getElement(locator, Executor.OR.getString(object)));
-            Executor.extentReport.logInfo("Wait succeeded and will click "+ object);
-            Elements.getElement(locator, Executor.OR.getString(object)).click();
-            Executor.extentReport.logPass("Click for "+ object + " was successfully performed");
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to click the object name : " + object + " | " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logInfo("Waiting until " + object + " is clickable");
+            wait.untilElementIsClickable(Elements.getElement(locator, TestRunner.OR.getString(object)));
+            TestRunner.extentReport.logInfo("Wait succeeded and will click " + object);
+            Elements.getElement(locator, TestRunner.OR.getString(object)).click();
+            TestRunner.extentReport.logPass("Click for " + object + " was successfully performed");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to click the object name : " + object + " | " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
     public static void input(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Entering the text in : " + object);
-            Elements.getElement(locator, Executor.OR.getString(object)).sendKeys(data);
+            TestRunner.extentReport.logInfo("Entering the text in : " + object);
+            Elements.getElement(locator, TestRunner.OR.getString(object)).sendKeys(data);
             wait.impWait(10);
-            Executor.extentReport.logPass("Input " + data + " to " + object);
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to enter " + data + " : "+ e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Inputted " + data + " to " + object);
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to enter " + data + " : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
-    public static void selectByVisibleText(String object, String locator, String data) {
-        Select select = new Select(Elements.getElement(locator, Executor.OR.getString(object)));
-        select.selectByVisibleText(data);
-        wait.impWait(10);
+    public static void inputAndEnter(String object, String locator, String data) throws IOException {
+        try {
+            TestRunner.extentReport.logInfo("Entering the text in : " + object);
+            Elements.getElement(locator, TestRunner.OR.getString(object)).sendKeys(data);
+            wait.impWait(10);
+            Elements.getElement(locator, TestRunner.OR.getString(object)).sendKeys(Keys.ENTER);
+            TestRunner.extentReport.logPass("Input and enter " + data + " to " + object + " successfully");
+        }
+        catch(Exception e) {
+            TestRunner.extentReport.logFailed("Not able to enter and submit :" + data + " : "+ e.getMessage());
+            TestRunner.boolResult = false;
+        }
+    }
+
+    public static void selectByVisibleText(String object, String locator, String data) throws IOException {
+        try {
+            Select select = new Select(Elements.getElement(locator, TestRunner.OR.getString(object)));
+            select.selectByVisibleText(data);
+            wait.impWait(10);
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to select the text " + data + " in the dropdown : " + e.getMessage());
+            TestRunner.boolResult = false;
+        }
     }
 
     /**
@@ -166,13 +181,12 @@ public class DriverActions {
 
     public static void moveToElement(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Moving to the element : " + object);
-            elementActions.moveToElement(Elements.getElement(locator, Executor.OR.getString(object)));
-            Executor.extentReport.logPass("Moved the mouse to " + object);
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to move to element : " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logInfo("Moving to the element : " + object);
+            elementActions.moveToElement(Elements.getElement(locator, TestRunner.OR.getString(object)));
+            TestRunner.extentReport.logPass("Moved the mouse to " + object);
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to move to element : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
@@ -183,55 +197,51 @@ public class DriverActions {
     public static void waitFor(String object, String locator, String data) throws IOException {
         // Force the machine to pause for given time (data param) seconds, otherwise will pause for 5 seconds.
         try {
-            Executor.extentReport.logInfo("Waiting for " + data + " seconds delay");
+            TestRunner.extentReport.logInfo("Performing " + data + " seconds delay");
 
-            if (!data.isEmpty()) {
+            if (data != null) {
                 Thread.sleep(Integer.parseInt(data) * 1000);
-            }
-            else {
+            } else {
                 Thread.sleep(5000);
             }
 
-            Executor.extentReport.logPass("Waited successfully");
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to wait : " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Waited successfully");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to wait : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
     public static void waitExplicitly(String object, String locator, String data) throws IOException {
         try {
             if (object == null && locator == null && data == null) {
-                Executor.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
+                TestRunner.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
                 return;
             }
 
-            Executor.extentReport.logInfo("Waiting for " + object + " explicitly in " + data + " seconds");
-            wait.untilElementVisible(Elements.getElement(locator, Executor.OR.getString(object)));
+            TestRunner.extentReport.logInfo("Waiting for " + object + " explicitly in " + data + " seconds");
+            wait.untilElementVisible(Elements.getElement(locator, TestRunner.OR.getString(object)));
             wait.impWait(Integer.parseInt(data));
-            Executor.extentReport.logPass("Waited successfully within " + data + " seconds");
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to wait explicitly : " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logPass("Waited successfully within " + data + " seconds");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to wait explicitly : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
     public static void waitForElementInvisibility(String object, String locator, String data) throws IOException {
         try {
             if (object == null && locator == null && data == null) {
-                Executor.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
+                TestRunner.extentReport.logFailed("Cannot wait explicitly without complete parameters.");
                 return;
             }
 
-            Executor.extentReport.logInfo("Waiting for " + object + " to be invisible within " + data + " seconds");
-            wait.untilElementNotVisible(Elements.getBy(locator, Executor.OR.getString(object)));
-            Executor.extentReport.logPass("Object "+ object +" has been invisible");
-        }
-        catch(Exception e) {
-            Executor.extentReport.logFailed("Not able to wait : " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logInfo("Waiting for " + object + " to be invisible within " + data + " seconds");
+            wait.untilElementNotVisible(Elements.getBy(locator, TestRunner.OR.getString(object)));
+            TestRunner.extentReport.logPass("Object " + object + " has been invisible");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Not able to wait : " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
@@ -241,25 +251,100 @@ public class DriverActions {
 
     public static void assertElementVisible(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Asserting if element is visible.");
-            Assert.assertTrue(Elements.getElement(locator, Executor.OR.getString(object)).isDisplayed());
-            Executor.extentReport.logPass("Assertion : Object " + object + " was visible");
-        }
-        catch (Exception e) {
-            Executor.extentReport.logFailed("Assertion : Object " + object + " is not visible | " + e.getMessage());
-            Executor.boolResult = false;
+            TestRunner.extentReport.logInfo("Asserting if element is visible.");
+            Assert.assertTrue(Elements.getElement(locator, TestRunner.OR.getString(object)).isDisplayed());
+            TestRunner.extentReport.logPass("Assertion : Object " + object + " was visible");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion : Object " + object + " is not visible | " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
     public static void assertPageReached(String object, String locator, String data) throws IOException {
         try {
-            Executor.extentReport.logInfo("Asserting if page was reached.");
+            TestRunner.extentReport.logInfo("Asserting if page was reached");
             Assert.assertTrue(driver.getCurrentUrl().contains(data));
-            Executor.extentReport.logPass("Assertion : Target page was reached");
+            TestRunner.extentReport.logPass("Assertion : Target page was reached");
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion error. Page was not reached." + e.getMessage());
+            TestRunner.boolResult = false;
         }
-        catch (Exception e) {
-            Executor.extentReport.logFailed("Assertion error. Page was not reached." + e.getMessage());
-            Executor.boolResult = false;
+    }
+
+    public static void assertAllResultsHaveHQIcon(String object, String locator, String data) throws IOException {
+        int amountOfResults = Elements.getElements(locator, TestRunner.OR.getString(object)).size();
+        try {
+            int amountOfResultsWithHQ = 0;
+            TestRunner.extentReport.logInfo("Asserting if all the results have HQ icon");
+            for (int result = 0; result < amountOfResults; result++) {
+                Elements.getElement(locator, "//*[@id='grid']/tbody/tr[" + (result + 1) + "]/td[8]/a/i");
+                amountOfResultsWithHQ++;
+            }
+            if (amountOfResults == amountOfResultsWithHQ) {
+                TestRunner.extentReport.logPass("Assertion : All results have HQ icon");
+            }
+            else {
+                TestRunner.extentReport.logFailed("Assertion : There are results that have no HQ icon");
+                TestRunner.boolResult = false;
+            }
+
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion : There was an error in counting the results | " + e.getMessage());
+            TestRunner.boolResult = false;
+        }
+    }
+
+    public static void assertHasResults(String object, String locator, String data) throws IOException {
+        try {
+            int amountOfResults = Elements.getElements(locator, TestRunner.OR.getString(object)).size();
+            TestRunner.extentReport.logInfo("Asserting if there is/are result(s)");
+
+            if (amountOfResults > 0) {
+                TestRunner.extentReport.logPass("Assertion : There are result(s)");
+            }
+            else {
+                TestRunner.extentReport.logFailed("Assertion : There are no result(s)");
+                TestRunner.boolResult = false;
+            }
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion : There was an error in counting the results > " + e.getMessage());
+            TestRunner.boolResult = false;
+        }
+    }
+
+    public static void assertNoResults(String object, String locator, String data) throws IOException {
+        try {
+            String strResultMsg = Elements.getElement(locator, TestRunner.OR.getString(object)).getText();
+            TestRunner.extentReport.logInfo("Asserting if there are no result(s)");
+
+            if (strResultMsg.contains("we don't have data")) {
+                TestRunner.extentReport.logPass("Assertion : There are no result(s)");
+            }
+            else {
+                TestRunner.extentReport.logFailed("Assertion : There are result(s)");
+                TestRunner.boolResult = false;
+            }
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion : There was an error in counting the results > " + e.getMessage());
+            TestRunner.boolResult = false;
+        }
+    }
+
+    public static void assertNotIncludedInSubs(String object, String locator, String data) throws IOException {
+        try {
+            String strResultMsg = Elements.getElement(locator, TestRunner.OR.getString(object)).getText();
+            TestRunner.extentReport.logInfo("Asserting if there are no included result(s)");
+
+            if (strResultMsg.contains("To access these")) {
+                TestRunner.extentReport.logPass("Assertion : There are no included result(s)");
+            }
+            else {
+                TestRunner.extentReport.logFailed("Assertion : There are included result(s)");
+                TestRunner.boolResult = false;
+            }
+        } catch (Exception e) {
+            TestRunner.extentReport.logFailed("Assertion : There was an error in counting the results > " + e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 }

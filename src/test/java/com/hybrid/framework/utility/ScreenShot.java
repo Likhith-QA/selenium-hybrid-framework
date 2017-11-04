@@ -15,7 +15,7 @@ public class ScreenShot {
 
         TakesScreenshot ts = (TakesScreenshot) driver;
         File source = ts.getScreenshotAs(OutputType.FILE);
-        String dest = Constants.SCREENSHOT_PATH + screenShotName + ".png";
+        String dest = StringBuilderUtils.build(Constants.SCREENSHOT_PATH, screenShotName, ".png");
         File destination = new File(dest);
         Files.copy(source, destination);
 

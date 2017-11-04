@@ -2,7 +2,7 @@ package com.hybrid.framework.utility;
 
 import com.hybrid.framework.config.Constants;
 import com.hybrid.framework.config.DriverActions;
-import com.hybrid.framework.executionEngine.Executor;
+import com.hybrid.framework.execution.TestRunner;
 import com.hybrid.framework.helpers.Time;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
@@ -51,8 +51,8 @@ public class ExtentReport {
         logger.log(LogStatus.FAIL, message);
 
         // Add screenshot to the 'reports' directory.
-        screenShotFileName = Executor.strTestCaseID + " " + Time.getTimeStampAndDate();
-        ScreenShot.capture(DriverActions.globalWebDriver.getDriver(), screenShotFileName);
+        screenShotFileName = TestRunner.strTestCaseID + " " + Time.getTimeStampAndDate();
+        ScreenShot.capture(DriverActions.globalDriver.getDriver(), screenShotFileName);
 
         String errorLogMsg = "Error found > Please check the screenshot in : \n"
                 + Constants.SCREENSHOT_PATH

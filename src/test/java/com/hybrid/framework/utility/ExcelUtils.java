@@ -1,26 +1,51 @@
 package com.hybrid.framework.utility;
 
 import com.hybrid.framework.config.Constants;
-import com.hybrid.framework.executionEngine.Executor;
+import com.hybrid.framework.execution.TestRunner;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ExcelUtils {
     private static XSSFSheet excelWSheet;
     private static XSSFWorkbook excelWBook;
     private static XSSFCell cell;
     private static XSSFRow row;
+    public static String machineName;
+    public static int numberOfWbToSet = 0;
+    private static final int totalAmountOfWorkbooks = 4;
+
+    public static void wbLoopAmountSetter() {
+        machineName = System.getProperty("user.name");
+        switch (machineName.toLowerCase()) {
+            case Constants.CAR:
+                numberOfWbToSet = 1;
+                break;
+            case Constants.GERARD:
+                numberOfWbToSet = 1;
+                break;
+            case Constants.RON:
+                numberOfWbToSet = 1;
+                break;
+            case Constants.JAMES:
+                numberOfWbToSet = 1;
+                break;
+            default:
+                numberOfWbToSet = totalAmountOfWorkbooks;
+                break;
+        }
+    }
 
     public static void setExcelFile(String Path) {
         try {
             FileInputStream ExcelFile = new FileInputStream(Path);
             excelWBook = new XSSFWorkbook(ExcelFile);
-        }
-        catch (Exception e) {
-            Executor.boolResult = false;
+        } catch (IOException e) {
+            Log.error(e.getMessage());
+            TestRunner.boolResult = false;
         }
     }
 
@@ -30,15 +55,15 @@ public class ExcelUtils {
             cell = excelWSheet.getRow(rowNum).getCell(colNum);
 
             if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-                return null;
+                return "no";
             }
             else {
                 return cell.getStringCellValue();
             }
         }
         catch (Exception e) {
-            Executor.boolResult = false;
-            return "";
+            TestRunner.boolResult = false;
+            return "no";
         }
     }
 
@@ -57,7 +82,7 @@ public class ExcelUtils {
             }
         }
         catch(Exception e) {
-            Executor.boolResult = false;
+            TestRunner.boolResult = false;
         }
     }
 
@@ -68,7 +93,7 @@ public class ExcelUtils {
             iNumber = excelWSheet.getLastRowNum() + 1;
         }
         catch (Exception e) {
-            Executor.boolResult = false;
+            TestRunner.boolResult = false;
         }
         return iNumber;
     }
@@ -84,7 +109,7 @@ public class ExcelUtils {
             }
         }
         catch (Exception e) {
-            Executor.boolResult = false;
+            TestRunner.boolResult = false;
         }
         return iRowNum;
     }
@@ -102,12 +127,12 @@ public class ExcelUtils {
             return number;
         }
         catch (Exception e) {
-            Executor.boolResult = false;
+            TestRunner.boolResult = false;
             return 0;
         }
     }
 
-    public static void setCellData(String data,  int rowNum, int colNum, String sheetName) {
+    public static void setCellData(String data,  int rowNum, int colNum, String sheetName, String wbPath) {
         try {
             excelWSheet = excelWBook.getSheet(sheetName);
             row = excelWSheet.getRow(rowNum);
@@ -119,13 +144,13 @@ public class ExcelUtils {
             else {
                 cell.setCellValue(data);
             }
-            FileOutputStream fileOut = new FileOutputStream(Constants.EXCEL_PATH);
+            FileOutputStream fileOut = new FileOutputStream(wbPath);
             excelWBook.write(fileOut);
             fileOut.close();
-            excelWBook = new XSSFWorkbook(new FileInputStream(Constants.EXCEL_PATH));
+            excelWBook = new XSSFWorkbook(new FileInputStream(wbPath));
         }
         catch(Exception e) {
-            Executor.boolResult = false;
+            TestRunner.boolResult = false;
         }
     }
 }

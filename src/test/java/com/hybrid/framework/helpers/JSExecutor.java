@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
- * Factory for Javascript Executor methods.
+ * Factory for Javascript TestRunner methods.
  */
 public class JSExecutor {
     private WebDriver driver;

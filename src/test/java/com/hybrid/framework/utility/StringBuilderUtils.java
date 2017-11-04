@@ -1,4 +1,4 @@
-package com.b2b.automation.utility;
+package com.hybrid.framework.utility;
 
 public class StringBuilderUtils {
 

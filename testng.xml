@@ -9,7 +9,7 @@
  
     <test name="Automation">
         <classes>
-          <class name="com.b2b.automation.execution.TestRunner"/>
+          <class name="TestRunner"/>
         </classes>
     </test>
 </suite> 

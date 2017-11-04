@@ -1,7 +1,7 @@
-package com.b2b.automation.utility;
+package com.hybrid.framework.utility;
 
-import com.b2b.automation.config.Constants;
-import com.b2b.automation.config.DriverActions;
+import com.hybrid.framework.config.Constants;
+import com.hybrid.framework.config.DriverActions;
 
 import java.io.IOException;
 
