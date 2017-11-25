@@ -29,9 +29,9 @@ public class Constants {
     public static final String KEYWORD_FAIL = "FAIL";
 
     // CSV File Paths
-    public static final String SETTINGS_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\Settings.csv";
-    public static final String TEST_CASES_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\Test Cases.csv";
-    public static final String TEST_STEPS_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\Test Steps.csv";
+    public static final String SETTINGS_PATH = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/Settings.csv";
+    public static final String TEST_CASES_PATH = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/Test Cases.csv";
+    public static final String TEST_STEPS_PATH = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/Test Steps.csv";
 
     // URLs
     public static final String BASE_URL = "http://10.40.11.210:8080/login";
@@ -40,7 +40,7 @@ public class Constants {
     private static final String FILE_FORMAT = ".xlsx";
 
     // QA user names
-    public static final String JAMES = "james.marturillas";
+    public static final String JAMES = "jmarturillas";
     public static final String CAR = "maricar.marzan";
     public static final String GERARD = "gerard.deguito";
     public static final String RON = "ron.delmoro";
@@ -51,13 +51,13 @@ public class Constants {
     public static final String EXCEL_NAME_RON = "DataEngine_Ron";
 
     // Excel path
-    public static final String EXCEL_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_MASTER + FILE_FORMAT;
-    public static final String EXCEL_CAR = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_CAR + FILE_FORMAT;
-    public static final String EXCEL_GERARD = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_GERARD + FILE_FORMAT;
-    public static final String EXCEL_RON = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\dataEngine\\" + EXCEL_NAME_RON + FILE_FORMAT;
+    public static final String EXCEL_PATH = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/" + EXCEL_NAME_MASTER + FILE_FORMAT;
+    public static final String EXCEL_CAR = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/" + EXCEL_NAME_CAR + FILE_FORMAT;
+    public static final String EXCEL_GERARD = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/" + EXCEL_NAME_GERARD + FILE_FORMAT;
+    public static final String EXCEL_RON = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/dataEngine/" + EXCEL_NAME_RON + FILE_FORMAT;
 
     // Screenshot path
-    public static final String SCREENSHOT_PATH = System.getProperty("user.dir") + "\\src\\test\\java\\com\\b2b\\automation\\reports\\screenshots\\";
+    public static final String SCREENSHOT_PATH = System.getProperty("user.dir") + "/src/test/java/com/hybrid/framework/reports/screenshots/";
 
     //Data Sheet Column Numbers
 
@@ -87,8 +87,8 @@ public class Constants {
     public static final String SHEET_TESTCASES = "Test Cases";
 
     // Browser binaries
-    public static final String CHROMEDRIVER = System.getProperty("user.dir") + "\\src\\test\\resources\\browser_binaries\\chromedriver.exe";
-    public static final String FIREFOXDRIVER = System.getProperty("user.dir") + "\\src\\test\\resources\\browser_binaries\\geckodriver.exe";
+    public static final String CHROMEDRIVER = System.getProperty("user.dir") + "/src/test/resources/browser_binaries/chromedriver.exe";
+    public static final String FIREFOXDRIVER = System.getProperty("user.dir") + "/src/test/resources/browser_binaries/geckodriver.exe";
 
     // Error Message
     public static final String ERR_MSG = "Check the 'Test Steps' sheet in Excel and/or 'extent-reporter.html'";
