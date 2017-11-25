@@ -18,7 +18,7 @@ selenium-hybrid-framework/src/test/java/com/hybrid/framework/dataEngine/DataEngi
 
 ## System Requirements
 **Dependencies**
-* Selenium 2.53.1 (recommended)
+* Selenium - whatever latest version (recommended)
 * Maven 3 or later
 * Surefire Plugin 2 or later
 * Google Guava 21.0 (recommended)
