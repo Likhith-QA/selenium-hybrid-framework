@@ -105,95 +105,85 @@ public class TestRunner {
         browserColumns.add(Constants.COL_CHROME_RUNMODE);
         browserColumns.add(Constants.COL_FIREFOX_RUNMODE);
 
-        // Excel sheet paths
-        List<String> wbPaths = new ArrayList<>();
-        wbPaths.add(Constants.EXCEL_PATH);
-        wbPaths.add(Constants.EXCEL_CAR);
-        wbPaths.add(Constants.EXCEL_GERARD);
-        wbPaths.add(Constants.EXCEL_RON);
+        for (int browserColumn : browserColumns) {
+            setBrowserToRun(browserColumn);
 
-        for (int wbLoop = 0; wbLoop < ExcelUtils.numberOfWbToSet; wbLoop++) {
-            configureExcel(wbPaths, wbLoop);
-            for (int browserColumn : browserColumns) {
-                setBrowserToRun(browserColumn);
+            // Counts the test case(s) in the 'Test Cases' sheet in 'DataEngine.xlsx'
+            intTotalTestCases = ExcelUtils.getRowCount(Constants.SHEET_TESTCASES);
+            intTestCase = 1;
+            i = 1;
 
-                // Counts the test case(s) in the 'Test Cases' sheet in 'DataEngine.xlsx'
-                intTotalTestCases = ExcelUtils.getRowCount(Constants.SHEET_TESTCASES);
-                intTestCase = 1;
-                i = 1;
+            if (intTotalTestCases > 1) methodTimesRun = 1;
 
-                if (intTotalTestCases > 1) methodTimesRun = 1;
+            setSheetColumnsToBeUsed(browserColumn);
 
-                setSheetColumnsToBeUsed(browserColumn);
+            // Execute each test case through a loop.
+            for(; intTestCase < intTotalTestCases; intTestCase++) {
 
-                // Execute each test case through a loop.
-                for(; intTestCase < intTotalTestCases; intTestCase++) {
+                // Extract the 'Test Case ID' and 'Runmode' values in the sheet 'Test Cases'
+                strTestCaseID = ExcelUtils.getCellData(intTestCase, Constants.COL_TESTCASEID, Constants.SHEET_TESTCASES);
+                strRunMode = ExcelUtils.getCellData(intTestCase, browserColumn, Constants.SHEET_TESTCASES);
 
-                    // Extract the 'Test Case ID' and 'Runmode' values in the sheet 'Test Cases'
-                    strTestCaseID = ExcelUtils.getCellData(intTestCase, Constants.COL_TESTCASEID, Constants.SHEET_TESTCASES);
-                    strRunMode = ExcelUtils.getCellData(intTestCase, browserColumn, Constants.SHEET_TESTCASES);
+                // Run the test case if its 'Runmode' is set to 'Yes'
+                if (strRunMode.equalsIgnoreCase(Constants.YES)) {
+                    if (i > 1 || y > 0)
+                        extentReport = new ExtentReport(false);
+                    else
+                        extentReport = new ExtentReport(true);
+                        y++;
 
-                    // Run the test case if its 'Runmode' is set to 'Yes'
-                    if (strRunMode.equalsIgnoreCase(Constants.YES)) {
-                        if (i > 1 || y > 0)
-                            extentReport = new ExtentReport(false);
-                        else
-                            extentReport = new ExtentReport(true);
-                            y++;
+                    // Start ExtentReporting engine.
+                    if (ExcelUtils.numberOfWbToSet == 1)
+                        extentReport.logger = extentReport.extent.startTest
+                                (StringBuilderUtils.build("(", browserToRun, ") ", strTestCaseID, " from ", excelName));
+//                    else
+//                        extentReport.logger = extentReport.extent.startTest
+//                                (StringBuilderUtils.build("(", browserToRun, ") ", strTestCaseID, " from ", excelNames[wbLoop]));
 
-                        // Start ExtentReporting engine.
-                        if (ExcelUtils.numberOfWbToSet == 1)
-                            extentReport.logger = extentReport.extent.startTest
-                                    (StringBuilderUtils.build("(", browserToRun, ") ", strTestCaseID, " from ", excelName));
-                        else
-                            extentReport.logger = extentReport.extent.startTest
-                                    (StringBuilderUtils.build("(", browserToRun, ") ", strTestCaseID, " from ", excelNames[wbLoop]));
+                    // Get the starting row and last row of the specified test case.
+                    intTestStep = ExcelUtils.getRowContains(strTestCaseID, Constants.COL_TESTCASEID, Constants.SHEET_TESTSTEPS);
+                    intTestLastStep = ExcelUtils.getTestStepsCount(Constants.SHEET_TESTSTEPS, strTestCaseID, intTestStep);
 
-                        // Get the starting row and last row of the specified test case.
-                        intTestStep = ExcelUtils.getRowContains(strTestCaseID, Constants.COL_TESTCASEID, Constants.SHEET_TESTSTEPS);
-                        intTestLastStep = ExcelUtils.getTestStepsCount(Constants.SHEET_TESTSTEPS, strTestCaseID, intTestStep);
+                    // Step invocation is initiated as 'true'; will change to 'false' once error was found at runtime.
+                    boolResult = true;
 
-                        // Step invocation is initiated as 'true'; will change to 'false' once error was found at runtime.
-                        boolResult = true;
+                    // Skip reading the description by adding the count of 'intTestStep'
+                    if (intTestStep < ExcelUtils.getRowCount(Constants.SHEET_TESTSTEPS)) intTestStep++;
 
-                        // Skip reading the description by adding the count of 'intTestStep'
-                        if (intTestStep < ExcelUtils.getRowCount(Constants.SHEET_TESTSTEPS)) intTestStep++;
+                    // Invoke the browser.
+                    if (methodTimesRun == 1) BrowserSelector.invokeBrowser(browserColumn);
 
-                        // Invoke the browser.
-                        if (methodTimesRun == 1) BrowserSelector.invokeBrowser(browserColumn);
+                    // Execute each step.
+                    for (; intTestStep < intTestLastStep; intTestStep++) {
+                        // Extract the action keyword from the sheet 'Test Steps' column 'Action Keyword'
+                        strDriverAction = ExcelUtils.getCellData(intTestStep, Constants.COL_DRIVERACTIONS,Constants.SHEET_TESTSTEPS);
 
-                        // Execute each step.
-                        for (; intTestStep < intTestLastStep; intTestStep++) {
-                            // Extract the action keyword from the sheet 'Test Steps' column 'Action Keyword'
-                            strDriverAction = ExcelUtils.getCellData(intTestStep, Constants.COL_DRIVERACTIONS,Constants.SHEET_TESTSTEPS);
+                        // Extract the page object from the sheet 'Test Steps' column 'Page Object'
+                        strPageObject = ExcelUtils.getCellData(intTestStep, Constants.COL_PAGEOBJECT, Constants.SHEET_TESTSTEPS);
+                        strLocator = ExcelUtils.getCellData(intTestStep, Constants.COL_LOCATOR, Constants.SHEET_TESTSTEPS);
+                        strData = ExcelUtils.getCellData(intTestStep, Constants.COL_DATASET, Constants.SHEET_TESTSTEPS);
 
-                            // Extract the page object from the sheet 'Test Steps' column 'Page Object'
-                            strPageObject = ExcelUtils.getCellData(intTestStep, Constants.COL_PAGEOBJECT, Constants.SHEET_TESTSTEPS);
-                            strLocator = ExcelUtils.getCellData(intTestStep, Constants.COL_LOCATOR, Constants.SHEET_TESTSTEPS);
-                            strData = ExcelUtils.getCellData(intTestStep, Constants.COL_DATASET, Constants.SHEET_TESTSTEPS);
+                        // Invoke execution of each step.
+                        executeTestStepActions();
 
-                            // Invoke execution of each step.
-                            executeTestStepActions();
-
-                            if(!boolResult) {
-                                setTestCaseResultInExcel(boolResult, intTestCase, wbLoop);
-                                break;
-                            }
+                        if(!boolResult) {
+                            setTestCaseResultInExcel(boolResult, intTestCase);
+                            break;
                         }
-
-                        if (boolResult) setTestCaseResultInExcel(boolResult, intTestCase, wbLoop);
-
-                        // Generate report.
-                        extentReport.generateReport();
-                        i++;
                     }
+
+                    if (boolResult) setTestCaseResultInExcel(boolResult, intTestCase);
+
+                    // Generate report.
+                    extentReport.generateReport();
+                    i++;
                 }
-                // Close the browser if test case(s) is/are all covered
-                if (intTestCase == intTotalTestCases) {
-                    if (extentReport != null)
-                        closeBrowser();
-                        methodTimesRun = 1;
-                }
+            }
+            // Close the browser if test case(s) is/are all covered
+            if (intTestCase == intTotalTestCases) {
+                if (extentReport != null)
+                    closeBrowser();
+                methodTimesRun = 1;
             }
         }
         // Close the stream.
@@ -247,6 +237,29 @@ public class TestRunner {
 
     private static void closeBrowser() throws IOException {
         DriverActions.closeBrowser(null, null, null);
+    }
+
+    private static void setTestCaseResultInExcel(boolean boolResult, int intTestCase) {
+        if (!boolResult) {
+            if (ExcelUtils.numberOfWbToSet == 1) {
+                ExcelUtils.setCellData(Constants.KEYWORD_FAIL, intTestCase, tcResultColumn, Constants.SHEET_TESTCASES, excelPath);
+                ExcelUtils.setCellData(Time.getCurrentTimeAndDate(), intTestCase, tcTestPerformedColumn, Constants.SHEET_TESTCASES, excelPath);
+            }
+            else {
+                ExcelUtils.setCellData(Constants.KEYWORD_FAIL, intTestCase, tcResultColumn, Constants.SHEET_TESTCASES, Constants.EXCEL_PATH);
+                ExcelUtils.setCellData(Time.getCurrentTimeAndDate(), intTestCase, tcTestPerformedColumn, Constants.SHEET_TESTCASES, Constants.EXCEL_PATH);
+            }
+        }
+        else if (boolResult){
+            if (ExcelUtils.numberOfWbToSet == 1) {
+                ExcelUtils.setCellData(Constants.KEYWORD_PASS, intTestCase, tcResultColumn, Constants.SHEET_TESTCASES, excelPath);
+                ExcelUtils.setCellData(Time.getCurrentTimeAndDate(), intTestCase, tcTestPerformedColumn, Constants.SHEET_TESTCASES, excelPath);
+            }
+            else {
+                ExcelUtils.setCellData(Constants.KEYWORD_PASS, intTestCase, tcResultColumn, Constants.SHEET_TESTCASES, Constants.EXCEL_PATH);
+                ExcelUtils.setCellData(Time.getCurrentTimeAndDate(), intTestCase, tcTestPerformedColumn, Constants.SHEET_TESTCASES, Constants.EXCEL_PATH);
+            }
+        }
     }
 
     private static void setTestCaseResultInExcel(boolean boolResult, int intTestCase, int wbLoop) {
